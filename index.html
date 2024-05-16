@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="Pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Org</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main>
+        <section class="tabela">
+            <form class="formulario">
+                <h2 class="tabela__titulo">Adicionar Nova Tarefa</h2>
+                <div class="formulario__div">
+                    <input type="text" class="formulario__input input__nome" id="input-nome" placeholder="Nome">
+                    <span class="mensagem-erro">Insira um nome para tarefa</span>
+                </div>                    
+                <div class="formulario__div">
+                    <input type="text" class="formulario__input input__tipo" id="input-tipo" placeholder="Tipo ou Categoria">
+                    <span class="mensagem-erro">Insira um tipo/categoria para tarefa</span>
+                </div>
+                <div class="formulario__div">
+                    <input type="date" id="input-data">
+                    <span class="mensagem-erro">Insira uma data válida para a tarefa</span>
+                </div>
+                <button type="submit" class="formulario__btn" id="btn-form">Adicionar</button>
+            </form>
+            <div class="lista__box">
+                <ul class="lista__ul" id="pendentes">
+                </ul>
+        </section>
+        <section class="tabela completadas">
+            <h3 class="tabela__titulo">Tarefas Completadas</h3>
+            <ul class="completadas__ul" id="completadas">
+            </ul>
+        </section>
+        <section class="tabela vencidas">
+            <h3 class="tabela__titulo">Tarefas Vencidas</h3>
+            <ul class="completadas__ul" id="vencidas">
+            </ul>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -280,9 +280,16 @@ function editar(){
 }
 
 function atualizaLista(){
-    identificaID(listaDeTarefas);
-    identificaID(listaDeTarefasCompletas);
-    identificaID(listaDeTarefasVencidas);
+    if(listaDeTarefas[0]){
+        identificaID(listaDeTarefas);
+    }
+    if(listaDeTarefasCompletas[0]){
+        identificaID(listaDeTarefasCompletas);
+    }
+    if(listaDeTarefasVencidas[0]){
+        identificaID(listaDeTarefasVencidas);
+    }
+
 
 
     listaDocument.innerHTML = '';

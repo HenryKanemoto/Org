@@ -7,22 +7,19 @@ const listaMensagem = document.querySelectorAll('.mensagem-erro');
 const listaDocument = document.querySelector('.lista__ul');
 const listaDocumentCompletados = document.querySelector('#completadas');
 const listaDocumentVencidas = document.querySelector('#vencidas');
+const listaStoragePendente = localStorage.getItem('listaPendente');
+const listaStorageCompleta = localStorage.getItem('listaCompleta');
+const listaStorageVencida = localStorage.getItem('listaVencida');
 
 
-
-let listaDeTarefas = [];
-let listaDeTarefasCompletas = [];
-let listaDeTarefasVencidas = [];
+let listaDeTarefas;
+let listaDeTarefasCompletas;
+let listaDeTarefasVencidas;
 let listaInputCheck = document.querySelectorAll('.item__check');
 let btnEditar = document.querySelectorAll('.btn-edit');
 let btnDeletar = document.querySelectorAll('.btn__del');
 let indice;
 let indiceEditado;
-
-listaDeTarefas = JSON.parse(localStorage.getItem('listaPendente'));
-listaDeTarefasCompletas = JSON.parse(localStorage.getItem('listaCompleta'));
-listaDeTarefasVencidas = JSON.parse(localStorage.getItem('listaVencida'));
-atualizaLista();
 
 
 form.addEventListener('submit',e => {
@@ -32,12 +29,29 @@ form.addEventListener('submit',e => {
         atualizaLista();
         inputNome.value = '';
         inputTipo.value = '';
-        inputData.value = undefined;
     }
 })
 
-
-
+if(listaStoragePendente){
+    
+    listaDeTarefas = JSON.parse(listaStoragePendente)
+    identificaID(listaDeTarefas);
+} else{
+    listaDeTarefas = [];
+}
+if(listaStorageCompleta){
+    listaDeTarefasCompletas = JSON.parse(listaStorageCompleta)
+    identificaID(listaDeTarefasCompletas);
+} else{
+    listaDeTarefasCompletas = [];
+}
+if(listaStorageVencida){
+    listaDeTarefasVencidas = JSON.parse(listaStorageVencida)
+    identificaID(listaDeTarefasVencidas);
+} else{
+    listaDeTarefasVencidas = [];
+}
+atualizaLista();
 
 function validaFormulario(listaInput, inputData, inputNome, inputTipo, mostrarMensagem){
     
@@ -87,8 +101,7 @@ function criaCard(item, nome, tipo, data, id, vencimento){
     let dataCompleta = new Date(data);
     const dataMes = dataCompleta.getMonth() + 1;
     const dataDia = dataCompleta.getDate() + 1;
-    const dataMesDia = dataDia + '/' + dataMes ;
-    
+    const dataMesDia = dataDia + '/' + dataMes ;    
     if(vencimento){
         listaDocumentVencidas.innerHTML += `
         <li class="lista__item">                    
@@ -150,7 +163,7 @@ function criaCard(item, nome, tipo, data, id, vencimento){
 
 }
 
-function salvaItem(nome, tipo, data, listaDeTarefas, checkState){
+function salvaItem(nome, tipo, data, listaDeTarefas, checkState, vencidaState){
     if(listaDeTarefas.length > 0){
         for(let i = 0; i < listaDeTarefas.length; i++){
             const item = listaDeTarefas[i];
@@ -162,7 +175,7 @@ function salvaItem(nome, tipo, data, listaDeTarefas, checkState){
                     'data': data,
                     'id': undefined,
                     'check': checkState,
-                    'vencida': false
+                    'vencida': vencidaState
                 })
                 break;
             }
@@ -174,7 +187,7 @@ function salvaItem(nome, tipo, data, listaDeTarefas, checkState){
                         'data': data,
                         'id': undefined,
                         'check': checkState,
-                        'vencida': false
+                        'vencida': vencidaState
                     })
                     break;
             }
@@ -187,7 +200,7 @@ function salvaItem(nome, tipo, data, listaDeTarefas, checkState){
             'data': data,
             'id': undefined,
             'check': checkState,
-            'vencida': false
+            'vencida': vencidaState
         })
     }
 }
@@ -257,7 +270,7 @@ function editar(){
                 const todosInputsValor = document.querySelectorAll('.item__input-ativado');
                 const todosSpan = document.querySelectorAll('.tipo__span');
                 const nomeValor = todosInputsValor[1];
-                const tipoValor = todosInputsValor[0];
+                const tipoValor = todosInputsValor[0]; 
                 const dataValor = todosInputsValor[2];
                 todosInputsValor.forEach(input => {
                     input.classList = 'item__input-desativado';
@@ -265,13 +278,15 @@ function editar(){
                 todosSpan.forEach(span => {
                     span.classList = 'tipo__span'
                 })
-                indiceEditado = -1
+                
                 if(!validaFormulario(todosInputsValor, dataValor, nomeValor, tipoValor, false)){
-                    listaDeTarefas.splice(inputId, 1);
+                    listaDeTarefas.splice(indiceEditado, 1);
                 } else{
-                    salvaItem(nomeValor.value, tipoValor.value, dataValor.value, listaDeTarefas, false);
-                    listaDeTarefas.splice(inputId, 1)
+                    listaDeTarefas[indiceEditado].nome  = nomeValor.value;
+                    listaDeTarefas[indiceEditado].tipo  = tipoValor.value
+                    listaDeTarefas[indiceEditado].data  = dataValor.value;
                 }
+                indiceEditado = -1
                 
                 atualizaLista();
             }
@@ -280,20 +295,14 @@ function editar(){
 }
 
 function atualizaLista(){
-    if(listaDeTarefas[0]){
-        identificaID(listaDeTarefas);
-    }
-    if(listaDeTarefasCompletas[0]){
-        identificaID(listaDeTarefasCompletas);
-    }
-    if(listaDeTarefasVencidas[0]){
-        identificaID(listaDeTarefasVencidas);
-    }
-
+    identificaID(listaDeTarefas);
+    identificaID(listaDeTarefasCompletas);
+    identificaID(listaDeTarefasVencidas);
 
 
     listaDocument.innerHTML = '';
     listaDocumentCompletados.innerHTML = '';
+    listaDeTarefasVencidas.innerHTML = '';
     listaDeTarefas.forEach(item => {
         if(new Date(item.data) <= new Date()){
             item.vencida = true;
@@ -302,42 +311,43 @@ function atualizaLista(){
         criaCard(item, item.nome, item.tipo, item.data, item.id, item.vencida);   
     })
     listaDeTarefasCompletas.forEach(item => {
-        criaCard(item, item.nome, item.tipo, item.data, item.id)
+        criaCard(item, item.nome, item.tipo, item.data, item.id, item.vencida);
     })
     listaInputCheck = document.querySelectorAll('.item__check');
     listaInputCheck.forEach(checkbox => {
         checkbox.addEventListener('click', () => {
-            
             const listaClicada = checkbox.parentElement.parentElement.parentElement.parentElement.className;
             let itemChecado;
             const idChecado = checkbox.parentElement.parentElement.parentElement.id;
 
             if(listaClicada == 'lista__ul'){
                 itemChecado = listaDeTarefas[idChecado];
+                itemChecado.check = true;
             } else{
                 itemChecado = listaDeTarefasCompletas[idChecado];
+                itemChecado.check = false;
             }
             
             const nomeChecado = itemChecado.nome;
             const tipoChecado = itemChecado.tipo;
             const dataChecado = itemChecado.data;
 
-            if(!itemChecado.check){
+            if(itemChecado.check){
                 listaDeTarefas.splice(idChecado, 1);
                 salvaItem(nomeChecado,tipoChecado,dataChecado,listaDeTarefasCompletas, true);
+                atualizaLista();
                 identificaID(listaDeTarefasCompletas);
             } else{
                 listaDeTarefasCompletas.splice(idChecado, 1);
                 salvaItem(nomeChecado, tipoChecado, dataChecado, listaDeTarefas, false);
+                atualizaLista();
                 identificaID(listaDeTarefas);
             } 
-            atualizaLista();
         })
     })
 
     editar();
     deletar();
-
     localStorage.setItem('listaPendente', JSON.stringify(listaDeTarefas));
     localStorage.setItem('listaCompleta', JSON.stringify(listaDeTarefasCompletas));
     localStorage.setItem('listaVencida', JSON.stringify(listaDeTarefasVencidas));

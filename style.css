@@ -9,7 +9,7 @@
     --cor-desabilitado: #8D8DAA;
     --cor-background-scrollbar: #AAAAAA;
     --cor-thumb-scrollbar: #61F2F5; 
-    --fonte-principal: "Caveat", cursive;
+    --fonte-principal: "Mansalva", sans-serif;
 }
 *{
     font-family: var(--fonte-principal);
